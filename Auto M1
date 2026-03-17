@@ -1,0 +1,62 @@
+-- AUTO M1 ATTACK SYSTEM
+
+local player = game.Players.LocalPlayer
+local vim = game:GetService("VirtualInputManager")
+
+local AttackDistance = 12
+
+function getNearestEnemy()
+
+    local nearest
+    local distance = math.huge
+
+    local char = player.Character
+    if not char then return end
+
+    local root = char:FindFirstChild("HumanoidRootPart")
+    if not root then return end
+
+    for _,enemy in pairs(workspace.Enemies:GetChildren()) do
+
+        if enemy:FindFirstChild("HumanoidRootPart") and enemy:FindFirstChild("Humanoid") then
+
+            if enemy.Humanoid.Health > 0 then
+
+                local dist = (root.Position - enemy.HumanoidRootPart.Position).Magnitude
+
+                if dist < distance then
+                    distance = dist
+                    nearest = enemy
+                end
+
+            end
+
+        end
+
+    end
+
+    return nearest,distance
+
+end
+
+
+task.spawn(function()
+
+while task.wait(0.15) do
+
+    if AutoFarm then
+
+        local enemy,dist = getNearestEnemy()
+
+        if enemy and dist <= AttackDistance then
+
+            vim:SendMouseButtonEvent(0,0,0,true,game,0)
+            vim:SendMouseButtonEvent(0,0,0,false,game,0)
+
+        end
+
+    end
+
+end
+
+end)
